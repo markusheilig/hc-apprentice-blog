@@ -1,0 +1,26 @@
+---
+date: "2019-04-06"
+title: "Day6"
+categories:
+  - self-organization, React.js, JavaScript
+---
+
+
+As already announced in the last blog post, today I mainly took care finding a way to visualize my progress for the indiviual learning categories.
+Uğurcan, one of the first Apprentices of HolidayCheck, has dealt with this problem a long time ago and decided to create his own solution.
+Therefore, he developed a [Data Visualization Tool](https://github.com/SengitU/trello-data-visualization) for Trello boards using React.js & JavaScript.
+This web app groups completed tasks according to their categories and plots the result afterward.
+Actually this is what I'm looking for, with the only difference that Uğurcan used Trello for task management instead of Github-Projects (as I do).
+I think it's great that Uğurcan once dealt himself with the topic 'self-organization & task-management' and therefore I decided to reuse his solution and extend it
+by developing an integration for Github-Projects. Plus, I wanted to get a little insight into React.js ;-)
+
+The idea behind this is simple:
+ - Step 1: Use the Github REST-API to fetch project information from by task board.
+ - Step 2: Convert the retrieved information into the same data model as the trello data model.
+ - Step 3: Add an option to 'switch' between a Trello board and a Github-Projects board.
+ 
+That's it, for the rest it should be possible to reuse Uğurcan's app.
+Today I have implemented step 1 and step 2, step 3 will be done tomorrow :-)
+
+Cheers,
+Markus
