@@ -1,0 +1,61 @@
+---
+date: "2019-04-08"
+title: "About Clones & Forks"
+categories:
+  - git, github
+---
+
+
+Today I came across a situation with Git/Github that I had never encountered before.
+What happend? 
+Two days ago I cloned Uğurcan's repository [Trello Data Visualization](https://github.com/sengitU/trello-data-visualization) to develop an integration for *Github-Projects*.
+In doing so, I forgot to create a fork first (which I would then use to create a pull request later on).
+The way I knew how to contribute to an open source project without being a collaborator (which means that you don't have push access) is as follows:
+
+1. Fork the repository you want contribute to
+2. Clone your fork to your local machine
+3. Make and commit your changes
+4. Push your commits to your github fork
+5. Create a Pull Request in the initial repository
+6. Wait and hope for your PR to be merged :-)
+
+However, this time I forgot the first step and directly cloned Uğurcan's repository.
+So I just coded and commited to a repository to which I have no push access to.
+So, what's next? 😱
+
+##### Upstream & origin
+
+I found [a great StackOverflow answer](https://stackoverflow.com/questions/9257533/what-is-the-difference-between-origin-and-upstream-on-github) which helped to me to understand the concept of *upstream* and *origin*.
+Git uses the term *upstream* to refer to the initial repository, whereas the term *origin* refers to the repository which was used for cloning.
+In my case, the *origin* points to Uğurcan's repository:
+```
+$ git remote show origin
+
+* remote origin
+  Fetch URL: https://github.com/SengitU/trello-data-visualization.git
+  Push  URL: https://github.com/SengitU/trello-data-visualization.git
+  ...
+```
+However, since I want the origin to be a repository to which I have push access, I forked Uğurcan's repository afterward and updated the *origin* to point to my fork:
+```
+$ git remote set-url origin https://github.com/markusheilig/trello-data-visualization.git
+```
+Let's ensure that updating the *origin* worked:
+```
+$ git remote show origin
+
+* remote origin
+  Fetch URL: https://github.com/markusheilig/trello-data-visualization.git
+  Push  URL: https://github.com/markusheilig/trello-data-visualization.git
+  ...
+```
+
+Works as expected, nice! 😎
+
+From now, a `git push` will push the commits to the new *origin*.
+At this time, I can continue with step 5 (i.e. creating a PR) :-)
+
+##### Long story short
+If you commited to a repository you have no push access to, simply create a fork afterward and make *origin* point to it. :-)
+
+
