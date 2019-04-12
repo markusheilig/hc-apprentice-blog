@@ -1,0 +1,53 @@
+---
+date: "2019-04-12"
+title: "Day10 - |> The pipe operator"
+categories:
+  - Elixir
+---
+
+So far I have mainly developed software using OOP languages like Java, Python or Scala.
+All these languages share some common OOP concepts such as classes for defining custom types, methods for encapsulation to ensure consistency, or inheritance and polymorphism for late binding.
+Elixir as a functional language, however, offers several different concepts.
+The 'building blocks' of an Elixir application are modules and functions, not classes and methods.
+An Elixir module can be imagined as a named collection of functions.
+In Elixir, you call a function by referring to its module as `String.ends_with?("abc", "c")`.
+By the way: Function names in Elixir are written in snake_case instead of camelCase for reasons of readability.
+
+Unlike the OOP languages mentioned above, you can't call a function on an object directly in Elixir.
+This really differs from other languages, where you call a function by referring to an object like `"abc".endsWith("c")`.
+In Java or Scala it is the compiler's job to pass a reference to the corresponding object as the first argument, not so in Elixir!
+I have to admit that I found this module+function combination a bit strange when I first saw it.
+However, this brings big advantages as we will see in a moment - Ladies and gentlemen, please welcome the pipe operator!
+
+#### The Pipe Operator
+
+Maybe you've come across nested, hard to read function calls like this:
+````
+print(count(split(read_file("words.txt"), "\n")))
+````
+In my opinion, the code above has two major problems:
+
+1. The nesting makes it really hard to follow the code!
+2. The sequence of the function execution is in reverse order compared to the reading direction!
+
+In order to avoid code like this, Elixir introduces the 'pipe' operator which is written as `|>`.
+The pipe operator takes the value on the left-hand side and uses it as the first argument to the function on the right-hand side:
+````
+ "words.txt"
+  |> read_file
+  |> split("\n")
+  |> count
+  |> print
+````
+
+Using the pipe operator makes the code much more readable by simply reading the transformation steps from top to bottom.
+Pretty nice 😎
+
+Be curious about next week, I will present Elixir's pattern matching concepts.
+
+See you then, cheers!
+
+
+
+
+
