@@ -9,7 +9,7 @@ In today's blog post I'll tell you what I've learned so far about Elixir's patte
 and which parts are really amazing in my opinion.
 But first let me tell you a little secret: Elixir has no assignment operator 🤯🤫
 
-The first time I got in touch with Pattern Matching was with Scala.
+The first time I got in touch with pattern matching was with Scala.
 At first I thought pattern matching is a slightly better version of the `switch` statement I knew from other languages like Java.
 It took me some time to understand why pattern matching is much more powerful.
 I think I just got the point when I saw a roman numerals converter in Scala implemented using pattern matching.
@@ -82,7 +82,7 @@ Function clauses are really amazing for so much reasons:
     ```
 
   2. We can use arguments from the clause in combination with function guards.
-     Guards are additional checks which have to be fullfilled in order that a function clause matches.
+     Guards are additional checks which have to be fulfilled in order that a function clause matches.
      For example, we can create a guard which ensures that we can call our `fib` function with positive numbers only:
     ```` 
     def fib(n) when n > 0, do: ...
