@@ -1,0 +1,112 @@
+---
+date: "2019-04-16"
+title: "Day12 - Pattern Matching"
+categories:
+  - Elixir, Softwaredesign
+---
+
+In today's blog post I'll tell you what I've learned so far about Elixir's pattern matching concepts
+and which parts are really amazing in my opinion.
+But first let me tell you a little secret: Elixir has no assignment operator 🤯🤫
+
+The first time I got in touch with Pattern Matching was with Scala.
+At first I thought pattern matching is a slightly better version of the `switch` statement I knew from other languages like Java.
+It took me some time to understand why pattern matching is much more powerful.
+I think I just got the point when I saw a roman numerals converter in Scala implemented using pattern matching.
+
+##### Pattern Matching in Elixir - The good parts
+In Elixir, the `=` operator (which looks like an assignment operator) actually is a match operator which tries to match the right side to the left side.
+For example, `x = 5` represents a successfull match and thus `x` is bound to 5.
+In case a pattern match does not succeed, Elixir throws a `MatchError`.
+Here are some examples:
+````
+x = 5             # pattern match works fine, so x is bound to 5
+5 = x             # also fine, since x is bound to 5
+^x = 5            # also fine, checks if 'x' is bound to 5, x will not be rebound
+42 = x            # MatchError since the right hand side value 5 does not match to 42
+{x, y} = {21, 42} # works fine, x is bound to 21, y is bound to 42
+{x, x} = {42, 42} # works also fine, x is bound to 42
+{x, x} = {21, 42} # MatchError since we expected the tuple elements to be the same
+````
+
+Pattern matching however cannot only be used for value checks, but also for destructuring complex data types like tuples, lists or maps.
+Imagine we have a function `print_point` which accepts an argument called `point` and we want to print some information based on the `point`'s structure <u>and</u> data.
+This could be done as follows:
+````
+def print_point(point) do
+  case point do
+      {x, x}    -> IO.puts("Point is in 2D space. X and Y are the same!")
+      {x, y}    -> IO.puts("Point is in 2D space. X and Y are different!")
+      {x, y, z} -> IO.puts("Point is in 3D space.")
+      _         -> IO.puts("This is not a valid point in 2D/3D space!")
+  end
+end
+````
+
+##### Pattern Matching in Elixir - The great parts
+Instead of pattern matching an argument within a function's body, Elixir allows us to define a function multiple times with different argument patterns.
+Each of these definitions is called a *function clause*.
+At runtime, Elixir checks for the corresponding clause (which is the one that first machtes the pattern in top down order) and then executes it.
+Function clauses allow us to split our `print_point` function from above into four smaller functions, with each implementing their own logic:
+````
+def print_point({x, x}) do
+  IO.puts("Point is in 2D space. X and Y are the same!")
+end
+
+def print_point({x, y}) do
+  IO.puts("Point is in 2D space. X and Y are different!")
+end
+
+def print_point({x, y, z}) do
+  IO.puts("Point is in 3D space.")
+end
+
+def print_point(point) do:
+  IO.puts("#{point} is not a valid point in 2D/3D space!")
+end
+````
+
+Function clauses are really amazing for so much reasons:
+
+  1. Function clauses allow us to stay very close to known notations like mathematics.
+     For example let's have a look at the mathematical definition of the Fibonacci sequence:
+
+    `fib(0) = 0`<pre></pre>`fib(1) = 1`<pre></pre>`fib(n) = fib(n-2) + fib(n-1)`
+    
+    Function clauses help us to create code which is almost 100% identical to the original definition:    
+    
+    ```
+    def fib(0), do: 0
+    def fib(1), do: 1
+    def fib(n), do: fib(n-2) + fib(n-1)
+    ```
+
+  2. We can use arguments from the clause in combination with function guards.
+     Guards are additional checks which have to be fullfilled in order that a function clause matches.
+     For example, we can create a guard which ensures that we can call our `fib` function with positive numbers only:
+    ```` 
+    def fib(n) when n > 0, do: ...
+    ````
+
+  3. Function clauses can save us from creating too large functions with too much control flow logic.
+     I think this can have real impact on the code quality with respect to readability and maintainability:
+     rather than inflating an existing function further, a developer might be more inclined to add a new clause instead.
+     
+
+
+
+So folks, that's it from me for this week.
+I wish you happy Easter & lots of sun. 🐰🥚🍳😎
+
+Cheers!
+
+
+
+
+
+
+
+
+
+
+
