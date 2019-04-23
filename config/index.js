@@ -7,9 +7,9 @@ module.exports = {
   siteUrl: 'https://markusheilig.netlify.de', // Domain of your site. No trailing slash!
   siteLanguage: 'en', // Language Tag on <html> element
   siteHeadline: 'Writing and publishing content', // Headline for schema.org JSONLD
-  siteBanner: '/social/banner.jpg', // Your image for og:image tag. You can find it in the /static folder
+  // siteBanner: '/social/banner.jpg', // Your image for og:image tag. You can find it in the /static folder
   favicon: 'src/favicon.png', // Your image for favicons. You can find it in the /src folder
-  siteDescription: 'Blog about my apprenticeship at HolidayCheck.', // Your site description
+  siteDescription: 'Blog about my Apprenticeship at HolidayCheck.', // Your site description
   author: 'Markus Heilig', // Author for schemaORGJSONLD
   siteLogo: '/social/logo.png', // Image for schemaORGJSONLD
 
