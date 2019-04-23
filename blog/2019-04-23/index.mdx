@@ -1,0 +1,78 @@
+---
+date: "2019-04-23"
+title: "Day13 - Implicit Knowledge"
+categories:
+  - Softwaredesign
+---
+
+In today's post I want to pay attention to a topic I stumbled across last week.
+As you probably know, I have extended Ugurcan's trello-board visualization app for Gitub-Projects support.
+In order to visualize the tasks/issues from a Github board, I use the Github REST API to fetch all issues from a given repository.
+At least I thought I'd fetch all issues...
+
+At first, everything seemed fine, but two days later, I noticed that the visualization tool must be broken somehow.
+The reason for this was that Github limits the number of issues in the HTTP response to 30 items by default.
+This explains why the app worked as expected only in the first days (when my board had less than 30 issues).
+In order to retrieve all issues of a repository, the Github-API provides *Pagination* via a HTTP header called *Link*.
+Since manual pagination is a bit complicated and error-prone, I decided to integrate a JavaScript library which already implements pagination.
+So, everything is fine now?
+
+I don't think so!
+First of all, it may not be obvious to other developers why I am using an external library, as I only use a minimum of the its functionality.
+What happens if another developer decides to remove this Github client libary or replaces it with another one which maybe has not support pagination?
+The error would only be noticed if a repository with more than 30 issues was tested again.
+So the question is **how can we share implicit knowledge to others?**
+
+For this I came up with the following possibilities:
+
+**1. Write additional code (in this case the pagination part) on my own**
+
+  This makes it 100% clear to others that Github uses pagination, so it gets explicit.
+  However, this leads to more code, which again is bad with regard to maintainability or errors proneness.
+
+**2. Add a comment in the code which explains why we use an external lib for the API call**
+
+  I'm not a fan of comments, maybe becase good comments are so hard to write.
+  Unlike code, comments are often not maintained.
+  Comments can simply be lies or contain misleading information which may confuse the reader. 
+
+**3. Add a software test which uses a dummy Github repository which contains more than 30 issues**
+  This could be too much effort? What would happen when Github decides to change their default limit of 30 items?
+  In addition, software tests with external systems could fail for a lot of other reasons (no internet connection, server not reachable etc).
+
+**4. Build a wrapper-function around the library call and give it an appropriate name**
+
+  I decided to wrap the function call of the library in an additional function called 'fetchAllIssues'.
+  This way I hope (and this *hope feeling* tells me, that this cannot be the silver bullet!) that other developers realize that
+  the library returns _ALL_ issues, not just some.
+
+**5. State the problem in the commit message.**
+
+  I've also done that, but I think no one ever will read it.
+
+**6. Ostrich method**
+
+   Simply stick your head in the sand and pretend there is no problem... This is one of the worst options I think!
+  
+
+  ------------------
+
+
+Do you know a better solution how to make implicit things in code more explicit?
+I think it would be great to hear some suggestions on this topic!
+
+Cheers!
+
+Markus
+
+
+
+
+
+
+
+
+
+
+
+
