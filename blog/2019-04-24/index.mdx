@@ -1,0 +1,82 @@
+---
+date: "2019-04-24"
+title: "Day14 - Elixir Processes"
+categories:
+  - Softwaredesign
+---
+
+Today's topic of Dave's video course was 'Elixir Processes'.
+This post will summarize the really most important information on this.
+
+#### What an Elixir Process is - and what it is not!
+An Elixir process (as in Erlang and the ErlangVM) represents the basic element for concurrency as well as for state management.
+The ErlangVM is designed to run hundreds of thousands of such small processes at a time.
+So in contrast to an operating system process, a process in the ErlangVM has much less memory and CPU footprint.
+It's the BEAM's job to manage scheduling of these processes (e.g. when and for how long will a process be executed).
+
+#### Hands-on: Let's build a Stack
+
+The following snippets describe the most important functions to operate with processes in Elixir:
+
++ `my_stack = spawn(Stack, :loop, [])`
+
+    `spawn` creates a new process which executes the given function with the given arguments of the given module.
+    In this case we create a new process which runs the function `loop` (2nd parameter) from a module called `Stack` (1st parameter) with no arguments (3rd parameter).
+  
++ `send(my_stack, {:push, 5})`
+
+    `send` is used to send a message to a process.
+    In this case we would send a tuple to our `my_stack` process.
+
++ `receive`
+
+    A process can wait for incoming message using the `receive` message.
+    The incoming message will then be pattern matched as you can see in the following code snippet:
+
+````
+defmodule Stack do
+
+  # We use a recursive loop function for state managing.
+  # Within this loop we wait for messages from other processes.
+  def loop(elements \\ []) do
+
+    # print current stack elements
+    IO.inspect(elements)
+    
+    receive do
+      # pattern 1: push a new element on the stack
+      {:push, elem} ->
+        loop([elem | elements])
+
+      # pattern 1: pop the top element from the stack
+      :pop ->
+        loop(tl(elements))
+
+      # pattern 3: remove all items in the stack
+      :clear ->
+        loop([])
+
+      # pattern 4: wildcard - handle unknown messages
+      unknown_message ->
+        IO.puts("ignoring unknown message '#{unknown_message}'")
+        loop(elements)
+    end
+  end
+end
+
+# example usage
+stack = spawn(Stack, :loop, [])
+send(stack, {:push, 1})
+send(stack, {:push, 2})
+send(stack, :pop)
+send(stack, {:push, 3})
+send(stack, :pop)
+````
+
+Guys it's late, tomorrow I'll tell you more on that stuff :-)
+
+See you then, bye!
+
+
+
+
