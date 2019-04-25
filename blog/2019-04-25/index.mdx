@@ -1,0 +1,67 @@
+---
+date: "2019-04-25"
+title: "Day15 - Elixir Processes Part2"
+categories:
+  - Softwaredesign, Elixir
+---
+
+In yesterday's post I presented a simple Elixir implementation for a `Stack` process.
+Today I had a talk with one of my mentors where I got asked how I know which
+type of messages a process supports or how to find this out in an easy way (i.e. without looking in the pattern matching code in the `receive` part).
+
+Good question because passing different kinds of messages like `:atoms`, `{tuples, ...}`, `"binaries"` and so on
+surely is not the best solution.
+When you use a statically typed language like Scala, you could define a class or object for each message type, e.g.:
+
+`````scala
+sealed trait StackMessage
+
+case class  Push(elem: Any) extends StackMessage
+case object Pop             extends StackMessage
+case object Clear           extends StackMessage
+`````
+
+In my stack implementation from yesterday, it is not quite obvious which messages are supported and how their structure looks like.
+For this reason, the Elixir/Erlang way for dealing with this is as follows:
+
+We define a function for each operation we want to support and pass a reference to a stack process (that is a process id or 'PID') as well as the corresponding parameters for the operation to it.
+For example, we create a function called `push` which accepts the stack-pid as a first and the element to be pushed as a second argument.
+Within this `push` function, we send a message the the given stack process which allows us to hide the message structure from our clients:
+
+``````
+defmodule Stack do
+    
+  # public functions 
+
+  def push(stack_pid, elem) do
+    send(stack_pid, {:push, elem})
+  end
+
+  def clear(stack) do
+    send(stack, :clear)
+  end
+
+  ...
+
+  def loop(elements) do
+    receive do
+      {:push, elem} ->
+        # handle push ...
+
+      :clear        ->
+        # handle clear ...
+
+      # handle more messages ...
+  end
+
+end
+``````
+
+This approach has two major advantages compared to the solution from yesterday:
+
+1. By defining a new function for each operation, we can benefit from our editor's auto-completion feature :-)
+2. By hiding the message structure from others, it is much easier for us to change the code which is a really a win with respect to maintainance.
+
+So much from me today, see you tomorrow!
+
+
