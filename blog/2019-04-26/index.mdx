@@ -1,0 +1,31 @@
+---
+date: "2019-04-26"
+title: "Day16 - Infrastructure Testing"
+categories:
+  - Infrastructure, Docker, goss, dgoss
+---
+
+This week I had a really impressive one-hour session about Docker & [goss](https://github.com/aelsabbahy/goss) with Wolfram.
+At first, I have to say that I have very little experience with Docker.
+So far, I only used Docker a few times to run a database in a container to not "pollute" my local system configuration.
+
+Wolfram explained me the most important Docker concepts and commands in a nutshell and then I was ready to get my hands dirty.
+The aim of our Docker session was to use goss in order to test Docker containers.
+goss is a little tool written in Go which allows us to validate a system (e.g. your local machine or a server) against a predefined specification described in a yaml-file.
+For example, Goss allows us to check if a specific tool is installed, if it has a specific configuration, or to check if a specific file exists on the machine.
+Since we didn't want to "pollute" our local systems with goss, we also decided to run goss in its own Docker container (which is known as [dgoss](https://github.com/aelsabbahy/goss/tree/master/extras/dgoss)).
+
+In our session, we decided that we want to validate that a plain 'Linux Alpine' container has a specific version.
+This is of course not a super expressive test case, but we have started with baby steps so that I can build on this in the future.
+
+I have to say that I didn't think much about testing Docker containers and was all the more amazed when I saw what possibilities there are.
+Wolfram also came up with the idea that one could make our Dockerfile setup a bit more generic and automatize it so that others had a simple way to reuse it for their containers and tests.
+I'm planning to setup a custom Docker image with Elixir soon and create some test specifications for that.
+Perhaps this helps me to find a way to create a more generic, automatized setup which then can be used easily for other projects and containers as well :-)
+
+That's it for this week, see you on monday :-)
+
+
+
+
+
