@@ -1,0 +1,84 @@
+---
+date: "2019-05-06"
+title: "Day21 - Isolated Tests in Practice (Part 1)"
+categories:
+  -  Testing, Scala, TDD
+---
+
+A few months before, I wrote a Tic-Tac-Toe console game in Scala.
+This post describes which design failures I made and how I try to eliminate them using isolated tests.
+
+#### So what's the Problem?
+
+The good news is that my game has some tests.
+The bad news is that these tests only cover the easy-to-test test-cases.
+Why is that? Well, the current game implementation makes it somehow hard to test specific parts of the game.
+So the really bad news is that there must be design failures.
+
+#### Bad Design by Example
+
+The following snippet shows pseudo-code which describes the current implementation of the game's main loop (i.e. continue playing until someone wins or there is a draw):
+
+```
+function play():  
+  // some game initialization code goes here ...
+
+  # game loop
+  while BoardStats(ticTacToeGrid) == Active:
+    if currentPlayer == humanPlayer:
+      // read next move for from stdin
+      (row, column) = readRowAndColumnFromStdIn()    
+    else
+      // it's the computers turn
+      (row, column) = computerChooseRowAndColumn(ticTacToeGrid)
+      
+    if ticTacToeGrid.isValidMove(row, column):
+      ticTacToeGrid = ticTacToeGrid.makeMove(row, column, currentPlayer /* X or O */)  
+      printToStdOut(ticTacToeGrid)
+      currentPlayer = opponentOf(currentPlayer)
+
+  # the game ended here
+  restart = readRestartFromStdIn()
+  if restart:
+    play()
+
+```
+
+This code is hard to almost impossible to test.
+The reason for that is that it mixes up a lot of IO operations (e.g. reading from stdin or printing to stdout) with game logic (e.g. updating the grid, alternating players, or play until the game is over).
+If one would write a test for the code above, this would be a perfect example of how an integrated test might look like.
+But we don't want these bad, integrated tests! So let's refactor!
+
+#### A Solution Approach
+
+As a first refactoring step, I introduced an explicit object which represents a game's current state, i.e. 
+`grid`, `currentPlayer` (e.g. 'X'), `otherPlayer` (e.g. 'O'), `humanPlayer` (e.g. 'X'), `computerPlayer` (e.g. 'O').
+This helps us to further separate the logic from the input.
+The game logic then operates on this particular game state.
+Therefore, I created a method called `makeMove` which receives a move + a game state and then returns a new game state and additional information as a result.
+This additional information tells us for example if a player has won or not.
+
+This simple refactoring step has made the code a bit more testable, see for yourself:
+
+```
+// Test Case: assert that players alternate after a valid move
+
+// arrange
+val gameState = GameState(
+  grid = new Board()
+  currentPlayer = X,
+)
+ 
+// act
+val actionResult = TicTacToe.makeMove(row = 1, column = 1, gameState)
+val updatedGameState = actionResult.gameState
+
+// assert
+actionResult shouldBe a[GameUpdated]         // assertion 1: game field is updated, but no one has won
+updatedGameState.grid(1, 1) shouldBe Some(X) // assertion 2: there is an 'X' on row=1/column=1
+updatedGameState.currentPlayer shouldBe O    // assertion 3: player 'O' is now in turn
+```
+
+
+In my next post, I'll continue this refactoring session and tell you how I further separate the "bad outside world" (IO) from the game logic.
+But now I have to pack my bag, tomorrow we are flying to Bulgaria to the [HCCamp](https://twitter.com/hccamp)! 😎
