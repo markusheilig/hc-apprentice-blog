@@ -1,0 +1,54 @@
+---
+date: "2019-05-03"
+title: "Day20 - On \"Integrated Tests Are A Scam\""
+categories:
+  -  Testing
+---
+
+I chose J.B. Rainsberger's talk [Integrated Tests Are A Scam](https://vimeo.com/80533536) as my main topic for the last two days.
+In his talk, JBrains explains the concepts of Integrated Tests, Isolated Tests and explains why Integrated Tests are a Scam.
+This post describes what I learned from the talk.
+
+#### What is an Integrated Test?
+
+At the beginning of his talk, JBrains defines integrated tests as follows:
+
+>> An integrated test is any test where the success or failure, pass or fail result, red or green, depends on many different bits of interesting behavior at once.
+
+This means that for a failing integrated test, you cannot directly point to where the problem comes from.
+Good tests have exactly the opposite property, i.e. we know exactly where the problem is when it fails.
+
+#### What is an Isolated Test?
+
+An isolated test is a test which tests an isolated part of the system, for example, a single function.
+For me, this means that isolated tests are the opposite of integrated test.
+When an isolated test fails, we know exactly what's going on and which part of the code caused the problem.
+This is for the reason that "isolated tests put tremendous pressure on the design".
+
+#### Integrated Tests vs Isolated Tests
+
+In some situations, it is hard to write good, isolated tests.
+This is mostly the case when we have several objects or (external) modules which interact with each other in a non-obvious way.
+The kind of tests we then write to "test" our software is exactly these integrated tests.
+Why is that?
+Integrated tests are more somehow a workaround solution caused by a bad design. We then use this kind of test to fill the missing gaps.
+Integrated tests, in contrast to isolated tests, allows us to take less care of the design, which we surely don't want!
+
+#### So what's the Scam?
+
+Imagine that 100% of our tests pass but we still find a mistake.
+We fix the mistake and write an integrated test to be sure that the fix works.
+We write an integrated test because the system's design makes it hard for us to write isolated tests.
+We know that integrated tests allow us to design more sloppily, which then results in a higher chance for new mistakes.
+Spending time on fixing a mistake and writing an integrated test means that we have less time for isolated tests.
+It may also be too hard to write an isolated test as the design of our software may already be broken.
+Afterward, we have 100% passing tests which sounds quite nice at first.
+However, this is not true if much of our tests are integrated tests.
+It's the opposite case!
+Integrated tests support us in continuing a sloppy design and thus further increase the potential for new mistakes.
+And this goes on and on and on ...
+This is what JBrains calls "a positive feedback loop of negative feelings".
+
+
+In my next blog post, I'll explain to you how I apply the concepts of isolated testing in a Tic-Tac-Toe game I wrote a few months ago.
+See you on my next post :-)
