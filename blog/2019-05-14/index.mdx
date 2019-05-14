@@ -1,0 +1,93 @@
+---
+date: "2019-05-14"
+title: "Day26 - Isolated Tests in Practice (Part 2)"
+categories:
+  -  Testing, Scala, TDD
+---
+
+In the first part of this TDD-Refactoring-Session, I introduced you to the structural design changes I made to my Tic-Tac-Toe game to make it more testable.
+In this second part, I'll explain how to further separate the logic of the game from the Text-UI and how I handle side effects like reading input from the console.
+
+#### Test the Game Loop
+In the previous blog post, I've shown how I separated the Tic-Tac-Toe logic from the UI in order to make a single move.
+However, the next step is missing, namely the verification that a game is played until a final state is reached.
+There are two final states in Tic-Tac-Toe, i.e. either a player wins or there is a draw.
+
+This is the test I came up with for testing the game loop:
+````
+"A TicTacToe" should "loop until a game is finished" in {
+
+  // ARRANGE
+  val game = GameState(Board(), X)
+  val moveProvider: GameState => (Row, Column) = moves(
+    (1, 1), // Player X
+    (3, 3), // Player O
+    (1, 2), // Player X
+    (3, 2), // Player O
+    (1, 3)  // Player X (win)
+  )
+
+  // ACT
+  val gameEvents = TicTacToe.play(
+    gameState = game,
+    player1MoveProvider = moveProvider,
+    player2MoveProvider = moveProvider
+  )
+
+  // ASSERT
+  gameEvents.last shouldBe a[GameWon]
+}
+`````
+
+As you can see in the snippet above, the `TicTacToe.play` function accepts a game state as a first argument and two functions which are responsible to provide the next move
+(one for the human player's next move and one for the computer's next move).
+Using these move provider functions helps us for at least three reasons:
+
+1. The game can be tested without having to rely on a real console input.
+2. One could easily add support to play the game PvP.
+3. We can still implement the game loop, since the provider function calls are allowed to block.
+
+
+#### Pushing UI (side effects) to the boundaries
+In addition to that, the tests helped me to separate the validation logic for user input from the real input source (i.e. reading from the console).
+In the old implementation, I mixed input reading with input validation which made the validation code just untestable.
+Now I created an object called `InputReader` which reads input from any source (this is done by passing a generic function which does the actual input reading), until the input satisfies a certain condition.
+
+````
+"An InputReader" should "read until the input satisfies a certain condition" in {
+
+  // ARRANGE
+  var counter = 0
+  val incrementAndGet = () => {
+    counter += 1
+    counter
+  }
+  
+  // ACT
+  val input = InputReader.read[Int](
+    inputProvider = incrementAndGet, // read input from function 'incrementAndGet'
+    inputValidator = _ > 3,          // input number must be greather than 3
+    onInputError = _ => { }          // we do not handle input errors in this test case
+  )
+
+  // ASSERT
+  input shouldBe counter
+}
+`````
+
+In the text-client of the Tic-Tac-Toe application, we can then pass the real function which reads input from the console (`scala.io.StdIn.readInt`, `scala.io.StdIn.readChar`, ...).
+For example, reading the dimension of the grid (which must be a number greather than 2) then looks as follows:
+`````
+print(s"Please insert grid dimension: ")
+val dimension = InputReader.read[Int](
+  inputProvider = scala.io.StdIn.readInt,
+  inputValidator = dim => dim >= 3,
+  onInputError = printInvalidChoice
+)
+``````
+
+Now the tests give me the certainty that the implementation really does what it is supposed to do.
+They also offer security for further extensions or refactorings, since mistakes can be detected earlier.
+In addition, I find it exciting to see how the tests affect the software design.
+From an untested mess of UI and logic mix towards isolated tests :-)
+I hope you enjoyed this little refactoring session as much as I did!
