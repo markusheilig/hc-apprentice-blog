@@ -1,0 +1,25 @@
+---
+date: "2019-05-22"
+title: "Day31 & Day32 - Writing your own xUnit Framework"
+categories:
+  -  TDD, Scala
+---
+
+The last two days I started to read Kent Beck's book *Test-Driven Development by Example* which was [recommended](https://twitter.com/markusheilig2/status/1128174410056310784) to me via Twitter.
+Compared to his video series, I have to say that I like the book much better because he proceeds in smaller steps which makes it possible to present ideas more comprehensible.
+The only disadvantage of the book is that it feels sometimes a bit difficult to follow a lot of small code snippets instead of following the programming flow as in the video.
+
+In the second part of his book, Kent Beck demonstrates how to TDD an xUnit-style framework in Python.
+The fun part of this is that he uses his testing framework to test his testing framework.
+Yeah, that is confusing 🙃
+As I read the book, I simply tried to translate Kent Beck's (pythonic) ideas to Scala ([repo here](https://github.com/markusheilig/tdd-by-example/tree/master/src/main/scala/part2)).
+The really important thing for me was to see how his design and code evolved.
+After I finished this part of the book, I decided to rewrite the whole thing from scratch without looking at the original code or the book ([code here](https://github.com/markusheilig/SUnit/tree/master/src))
+which was really a nice exercise!
+However, when I did this, I often caught myself taking too many steps at once (à la "... and know we could also need this",  "... oh, that would be also nice", or "let's try out this for a moment ...", ...).
+Next time when I notice this, I think I should try Kent Beck's suggestion to simply write the next steps that come to mind on a piece of paper and then work through one point at a time and then cross out.
+
+
+So much for now, see you tomorrow!
+
+*Note to self: writing a small testing framework could also be a nice idea for the Morning-Katas! :-)*
