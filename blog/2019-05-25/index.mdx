@@ -1,0 +1,53 @@
+---
+date: "2019-05-25"
+title: "Day33 & Day34 - TDD Patterns"
+categories:
+  -  TDD
+---
+
+The last two days I mainly spent reading Kent Beck's book *TDD by Example*.
+This post summarizes the most important TDD patterns he presents in there.
+
+#### Test-Driven Development Patterns
+
+- Isolated Tests: tests should not depend on or affect each other. [Here](https://www.youtube.com/watch?time_continue=7&v=pXBZ0G1cp3Q) is also a great talk of how to write these kind of tests.
+- Test List: write down the test cases you want to implement on a piece of paper and so focus on a single task at a time!
+- Test First: start with writing the test, not the implementation code
+- Assert First: write the assert check first, then you'll see which other code you really need for your test
+- Data: use simple data; test data should reflect real data; use small lists if larger lists make no difference
+    - Use realistic data when
+        - testing real-time systems (tracing with external events)
+        - matching output of current system with output of a previous system
+        - refactoring a simulation where you expect precisely the same answers when you are finished
+- Evident Data: make numbers and calculations/formulas obvious in your assert statement
+
+#### Red Bar Patterns: when to write tests, where to write tests and when to stop writing tests
+
+- One Step Tests: pick a test from your test list that will teach you something and you are confident you can implement
+- Starter Tests: test something that you are certain you can quickly get to work (i.e. a variant of an operation that doesn't do anything, e.g. reduce empty list)
+- Explanation Tests: ask your colleagues questions in terms of test cases or translate uml-diagrams into tests and discuss them afterward
+- Learning Tests: write tests for external APIs to ensure that our understanding of the API is correct and it works as expected
+- Another Test: if you can think of a good test case, then don't let it stop you from the current task but add it to your test list
+- Regression Tests: ensure changes or new features don't break existing code
+- Break: breaks support change of perspective which can be helpful to come up with new ideas
+- Do Over: throw away code and start over
+
+#### Testing Patterns: more-detailed techniques for writing tests
+
+- Child-Test:  break down large tests into smaller subtests, make them pass one after another
+- Mock Object: create a fake version for expensive or complicated resources (assert expectations + return constants)
+- Shelf Shunt: how to test that one object communicates correctly with another? have the object under test communicate with the test case instead of with the object it expects
+- Log String: concatenate a string which verifies that (template, observer, ..., whatever) code is called in correct order
+- Crash Test Dummy: mock object to test 'extreme' (exceptional) situations (this is similar to Mock Objects)
+- Broken Test: leave a broken test for yourself when you finish your programming session, then you know where to continue next time (like a bookmark)
+- Clean Check-in: make all tests running when working on a team project before you commit code
+
+#### Green Bar Patterns: make tests pass - get green quickly
+
+- Fake It ('Til You Make It): start with constants as actual values, then replace them with expressions using variables
+- Triangulate: triangulate to your design, that means add more assertions to your test case until you figure out how to create an abstraction of it
+- Obvious Implementation: just implement simple operations, but take teensy-weensy tiny steps when you get surprised by red bars!
+- One-To-Many: when testing operations on collections, start by implement the operation for a single element at first, then for a collection
+
+
+
