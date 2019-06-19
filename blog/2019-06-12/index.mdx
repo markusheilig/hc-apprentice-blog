@@ -1,0 +1,63 @@
+---
+date: "2019-06-12"
+title: "On 'Transformation Priority Premise'"
+categories:
+  - TDD
+---
+
+A few days ago I read an article by Uncle Bob entitled *Transformation Priority Premise*.
+This post summarizes it's core idea of Transformations and the Transformation Priority Premise.
+
+##### What is a Transformation?
+
+A transformation, as the counterpart of refactoring, is a small code change/operation with a behavioral change as a result.
+There are different kinds of Transformations, for example replacing a constant with a scalar like a variable or an argument,
+denoted as `(constant -> scalar)`.
+We as developers apply transformations to turn red (failing) tests into green (passing) tests.
+
+##### What is Transformation Priority?
+
+Uncle Bob defines the following transformations, where the order of a transformation represents its priority:
+
+1. `({} -> nil)` no code at all , return `nil` or `null`
+
+2. `(nil -> constant)` replace `nil/null` with a constant
+
+3. `(constant -> constant+)` replace a single constant with several other constants
+
+4. `(constant -> scalar)` replace a constant with a scalar (variable or argument)
+
+5. `(statement -> statements)` replace a single statement with several other statements
+
+6. `(unconditional -> if)` introcude a new execution path
+
+7. `(scalar -> array)` replace a scalar with an array
+
+8. `(array -> container)` replace an array with a collection container
+
+9. `(statement -> tail-recursion)` replace a statement with a tail-recursive call
+
+10. `(if -> while)` replace an if-statement with a while-loop
+
+11. `(statement -> non-tail-recursion)` replace a statement a non-tail-recursive call
+
+12. `(expression -> function)` replace an expression with a function
+
+13. `(variable -> assignment)` reassign the value of a variable
+
+14. `(case)` add a new execution path to an existing split of the execution path (e.g. introduce an `else` branch or a new `case` statement in an existing `switch` statement)
+
+##### The Impasse Problem
+
+The impasse problem is when you have to rewrite your whole algorithm in your implementation code in order to make the next test from red to green.
+
+##### What is the Transformation Priority Premise?
+
+Uncle Bob states the Transformation Priority Premise the following way:
+>> A different sequence of tests allows the algorithm to come together in the stepwise fashion that TDDers prefer. How can you choose the right sequence?
+[...] if you choose the tests and implementations that employ transformations that are higher on the list, you will avoid the impasse.
+
+From my point of view, the most difficult part of this is to figure out which "next test" is the one that allows you to apply a higher transformation instead of a lower transformation in the list.
+I have to admit that so far I have never really made any thoughts about the fact that writing tests in a different order could result in an impasse dilemma or not.
+Uncle Bob presents a [Case Study: Word Wrap](https://blog.cleancoder.com/uncle-bob/2013/05/27/TheTransformationPriorityPremise.html) with two different test order sequences, one of which leads to an impasse, the other not.
+I think it could worth it paying attention to tests and their corresponding transformations by practicing this with some Katas. I will give you an update about it at a later time.
