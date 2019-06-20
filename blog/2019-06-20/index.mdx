@@ -1,0 +1,68 @@
+---
+date: "2019-06-20"
+title: "Option vs Either (Part 1)"
+categories:  
+  - SoftwareDesign
+---
+
+The last days I paired with Lewis, a former apprentice, to refactor some functions in a Scala codebase.
+By doing this, we decided to refactor the return type of some functions from `Option` to `Either`.
+This post is the first one of a trilogy and describes Scala's `Option` type.
+In the second post, we will see what the `Either` type is.
+In the last post of this series, I will I'll talk about some problems we had using `Option` and how `Either` helped us achieve a better design.
+
+#### What is `Option`?
+
+Scala's `Option` trait defines a data type which has exactly two subclasses, called `Some` and `None`.
+You can use the `Option` type for the case you want to present the absence of a value with an object (instead of just using `null` as done in some other languages).
+
+
+For me, `Option` has two main benefits over `null`s:
+
+**1. Your code explicitely states that it can be that there is no value present:**
+
+````scala
+val maybeHotel: Option[Hotel] = database.findHotelByName("Dana Beach")
+maybeHotel match {
+ case None => println("There is no hotel with the given name") 
+ case Some(hotel) => println("The hotel has " + hotel.rooms.size + " number of rooms")
+}
+````
+By returning an `Option[Hotel]` instead of either a `Hotel` object or null, the client (the one which calls this function) knows that it is possible that there is no hotel for a given name.
+In my opinion, this is much better than presenting the absence of the hotel with a `null` value because it can help to prevent you from `NullPointerException`s by making it clear that the hotel may not exist.
+
+**2. `Some` and `None` share a common interface:**
+
+Since `Some` and `None` share the common interface `Option`, we can operate on them the same way, which can lead to much more readable code.
+Let's write some 'old-style' Java code to find out how many drinks are left in a minibar using using `null`-checking.
+``````java
+int numberOfDrinks = -1;
+Hotel hotel = findHotelByName("Dana Beach")
+if (hotel != null) {
+  Room room = hotel.getRoomByRoomNumber(212)
+  if (room != null) {
+    Minibar minibar = room.getMinibar()
+    if (minibar != null) {
+      numberOfDrinks = minibar.drinks.size;
+    }
+  }
+}
+``````
+In contrast to the code above, Scala's `Option` type helps us to get rid of these `null` checks in an elegant way.
+This allows us for example to chain function calls like `map` or `flatMap`.
+Therefore, we can also use `Option`s in combination with Scala's `for`-comprehension.
+I think this makes the code much nicer to read:
+``````scala
+val numberOfDrinks = (for {
+  hotel <- findHotelByName("Dana Beach") // returns Option[Hotel]
+  room <- hotel.getRoomByRoomNumber(212) // returns Option[Room]
+  minibar <- room.minibar                // returns Option[Minibar]
+} yield minibar.drinks.size)
+  .getOrElse(-1)
+``````
+
+In the next blog post, I will introduce the `Either` type and its benefits!
+
+
+
+
