@@ -1,4 +1,6 @@
 const _ = require('lodash')
+const { createFilePath } = require(`gatsby-source-filesystem`)
+
 
 // graphql function doesn't throw an error so we have to check to check for the result.errors to throw manually
 const wrapper = promise =>
@@ -9,7 +11,7 @@ const wrapper = promise =>
     return result
   })
 
-exports.onCreateNode = ({ node, actions }) => {
+exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions
 
   let slug
@@ -28,6 +30,15 @@ exports.onCreateNode = ({ node, actions }) => {
       slug = `/${_.kebabCase(node.frontmatter.title)}`
     }
     createNodeField({ node, name: 'slug', value: slug })
+  }
+
+  if (node.internal.type === `MarkdownRemark`) {
+    const value = createFilePath({ node, getNode })
+    createNodeField({
+      name: `slug`,
+      node,
+      value,
+    })
   }
 }
 
