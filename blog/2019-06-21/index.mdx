@@ -1,0 +1,81 @@
+---
+date: "2019-06-24"
+title: "Option vs Either (Part 2)"
+categories:  
+  - SoftwareDesign
+---
+
+In the [first post](https://markusheilig.netlify.com/option-vs-either-part-1) of this trilogy, I introduced Scala's `Option` type and why I prefer it over `null`.
+This post is all about another Scala monad called `Either`.
+
+##### Motivation
+
+Let's build a little wheel of Fortune application for a game show to determine a player's prize, which is either a car🚗 or a goat🐐.
+The chance for a player to win a brand new car is 33% (lucky guy!), whereas there is a chance of 67% that the player returns home with a new pet (sorry, bad luck!).
+
+We assume, for whatever reasons, that the car and the goat have no common superclass or interface.
+So for now we have two classes which represent the prizes:
+``````
+case class Car(color: String)
+case class Goat(name: String)
+``````
+
+Now let's create a function which determines the prize for a player, called `determinePrize`.
+Since a player can only win one of both prizes, we have to choose a return type which is able to handle both cases.
+Reminder: our classes `Car` and `Goat` have no common superclass.
+So what return type do we expect from our function?
+Should we go for `Any` class, which is the superclass of all other classes (similar to `Object` in Java)?
+While `Any` as return type would be technically ok, I don't like this approach very much since a caller really doesn't know what to expect from the function's result.
+(Of course, we could use `Any` as return type and add a comment that the function will return a car object or a goat object, but comments are outdated quickly because they are often not updated when the code changes.)
+
+##### The Either Type
+
+As I already mentioned above, a player can only win one of both prizes, that is *either* a car *or* a goat.
+Scala's standard library defines a trait called `Either[A, B]` with the type arguments, `A` and `B`.
+There are exactly two subclasses of `Either`, called `Left[A]` and `Right[B]`.
+So an object can be either of type `Left` and contain a value of type `A`, or of type `B` and contain a value of type `B`.
+So lets use `Either[A, B]` as return type for our function `determinePrize`, using `Goat` for type parameter `A` and `Car` for type parameter `B`, i.e. `Either[Goat, Car]`.
+
+````scala
+def determinePrize(wheelOfFortuneResult: Double): Either[Goat, Car] = {
+  val chanceToWinTheCar = 0.33
+  if (wheelOfFortuneResult <= chanceToWinTheCar)
+    Right(Car("Red"))
+  else
+    Left(Goat("Pitu"))
+}
+````
+
+Let's write some tests to see how it works in practice:
+
+````scala
+"Prize for Wheel of Fortune" should "be a car" in {
+  val prize = determinePrize(wheelOfFortune = 0.25)
+  prize.isLeft shouldBe false
+  prize.isRight shouldBe true
+  prize.right.get shouldBe Car("Red")
+}
+
+it should "be a goat in" in {
+  val prize = determinePrize(wheelOfFortune = 0.8)
+  prize.isLeft shouldBe true
+  prize.isRight shouldBe false
+  prize.left.get shouldBe Goat("Pitu")
+}
+
+it should "be possible to pattern match the prize" in {
+  val wheelOfFortune = generateRandomDoubleBetween(0, 1)
+  val prize = determinePrize(wheelOfFortune)
+  prize match {
+    case Left(Goat(name)) => println(s"Your goat is called $name")
+    case Right(Car(color)) => println(s"Your car is $color")
+  }
+}
+````
+
+
+**Note:** `Either` is not the same as a tuple! While a tuple is an element containing two values at a time, an instance of `Either` is either `Left[A]` or `Right[B]` and thus contains only a single value of the specified type.
+
+In the third blog post of this trilogy, I'll explain why Lewis and I decided for a refactoring from `Option` to `Either`.
+P.S.: If you ever take part in a Wheel of Fortune, don't be sad if you win the 🐐 - it gives excellent milk🥛 and cheese🧀!
+
