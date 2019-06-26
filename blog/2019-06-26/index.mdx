@@ -1,0 +1,140 @@
+---
+date: "2019-06-26"
+title: "Option vs Either (Part 3)"
+categories:  
+  - SoftwareDesign,Refactoring
+---
+
+This post is the last one of the **Option vs Either** trilogy.
+In the [first post](https://markusheilig.netlify.com/option-vs-either-part-1), I introduced the `Option` type and why it should be used over `null`.
+In the [second post](https://markusheilig.netlify.com/option-vs-either-part-2), I introduced the `Either` type and showed how it can be used, for example, to define a uniform return value for two distinct object types.
+This post explains the motivation why Lewis and I decided to refactor some Scala functions from return type `Option` to `Either`.
+
+##### `Option[A]` and `Either[A,B]` - how do they relate to each other?
+
+Let's create a function called `div` which divides a given dividend `a` by a divisor `b`.
+This function could be defined as follows:
+
+`````scala
+// return type: Int - throws a runtime exception if the divisor is 0
+def div(a: Int, b: Int): Int =
+  a / b
+`````
+
+Usually, we don't want to handle error cases with exceptions, especially in functional programming.
+(Note to myself: The 'why' could be a nice topic for another blog post.)
+
+For this reason, let's redefine our `div` function and return an `Option` instead of `Int` in order to avoid exceptions. 
+The code for this is also straightforward:
+If the given divisor `b` is 0, then we return `None`, otherwise, we return `Some(quotient)`.
+
+`````scala
+// return type: Option[Int] - returns None if the divisor is 0
+def div(a: Int, b: Int): Option[Int] =
+  if (b == 0) None else (a / b)
+`````
+
+Let's redefine our `div` function one last time to make it return an `Either[String, Int]`.
+In this case, if the given divisor is 0, we return a `Left` object with the error message "Division by zero is not allowed"*****,
+or a `Right` object wrapping the quotient.
+
+`````scala
+// return type: Either[String, Int] - returns Left(errorMessage) if the divisor is 0
+def div(a: Int, b: Int): Either[String, Int] =
+  if (b == 0) Left("Division by zero is not allowed") else Right(a / b)
+`````
+
+Prima facie, the `Option` and `Either` version seem very similar, but there is a notable difference:
+When a function returns `None`, all you know is that no result value is defined, but you are not told the reason.
+In our example, it is pretty obvious what `None` means (namely division by zero), but there are a lot of situations which are not that obvious.
+
+*****You want to understand why division by zero is not allowed? Just ask Siri:
+*"Hey Siri, was ist 0 geteilt durch 0"* and you'll receive a brilliant explanation😂
+
+##### Refactoring from `Option[A]` to `Either[A, B]`
+
+When Lewis and I started our refactoring session, we had code that was roughly structured like shown as follows.
+We had a somehow generic `parseContent` function which dispatched the `content` to parse as well as `someMoreInfo` to a specific parse function depending on the `contentType`.
+The `parseContent` function returned an `Option` with `Some(parsedResult)` or `None` if the content parsing failed.
+In case the content type is not supported, a warning message was logged.
+
+``````
+def parseContent(content: String, contentType: String, someMoreInfo: MoreInfo): Option[ParsedResult] = {
+  contentType match {
+    case "html" => 
+      parseHtmlStuff(content, someMoreInfo)
+    case "xml" =>
+      parseXmlStuff(content, someMoreInfo)    
+    case "xyz =>
+      parseXyzStuff(content, someMoreInfo)
+    case notSupported =>
+      logger.warn(s"Content type '$notSupported' is not supported")
+      None
+  }
+}
+``````
+
+In the following snippet, you see an example of how the `parseContent` function from above was used before.
+We received our content to parse as well as some additional information.
+When the parsing succeeds, an info message is logged, otherwise, we log a warning message.
+````scala
+val (content, contentType, someMoreInfo) = getAllTheStuffWeNeedToParse()
+parseContent(content, contentType, someMoreInfo) match {
+  case Some(parsedResult) =>
+    logger.info("Cool, it worked!")
+  case None =>
+    logger.warn("Oops, it seems that something went wrong")
+}
+````
+
+
+The following snippet shows how `parseHtmlStuff` works.
+(The other parsing functions roughly looked the same.)
+
+````scala
+def parseHtmlStuff(html: String, someMoreInfo: MoreInfo): Option[ParsedResult] = {
+  if (…) {
+    logger.warn("content is not a valid html format")
+    None
+  } else if (…) {
+    // 'someMoreInfo' is only passed for logging reasons :-/ …
+    logger.warn("parsing failed because of …. Some more info: " + someMoreInfo)
+    None
+  } else {
+    …
+    Some(parsedHtmlResult)
+  }
+}
+````
+
+There were two things that bothered us about these parsing functions:
+
+1. The parsing functions themselves logged warning or error messages.
+2. We passed `someMoreInfo` to the parser functions *only* for logging reasons.
+
+So we decided to refactor the return type:
+Instead of returning an `Option[ParsedResult]` and doing the logging in the parser functions,
+we decided to change the function's return type to `Either[String, ParsedResult]`, where `Left` contains the reason why the parsing failed, and `Right` represents the successfully parsed result.
+And there are a lot of things which can go wrong when parsing data (invalid data format, missing elements, …, you name it)!
+The type parameters `String` and `ParsedResult` for the `Either` return type are also a perfect example of two types which do not relate to each other directly (i.e. no common superclass except `Any`).
+Using `Either` instead of `Option` was exactly what helped us to solve the two problems discussed above:
+
+1. If the parsing operation succeeds, we can return a `Right` object which wraps the parsed data.
+   In case the parsing operation fails, we were now able to return a specific error message for a specific parsing failure as a `Left` result.
+   By returning the error message in case of a failure, the parsing functions no longer have to log the messages themselves.
+2. We no longer had to pass `someMoreInfo` to the parser functions for logging reasons, since the 'outer' layer could do just append the `someMoreInfo` to the `Left` error message.
+   The outer layer, in this case, was a function which calls the function `parseContent`.
+   Only the outermost layer now logs a given error message.
+
+
+Our code base was much more complex than the example I described here and so the refactoring took us quite some time.
+(In addition to that, we also had to fix the tests which did not compile anymore.)
+At the end, when all this refactoring stuff was done, we were really happy to see the final result 😃
+
+![Alt Text](https://media.giphy.com/media/biGuUILFjgKyLtbwqb/giphy.gif)
+
+
+
+
+
+
