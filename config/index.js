@@ -4,7 +4,7 @@ module.exports = {
   siteTitle: 'My Apprenticeship @HolidayCheck', // Navigation and Site Title
   siteTitleAlt: 'HolidayCheck Apprenticeship', // Alternative Site title for SEO
   siteTitleManifest: 'ApprenticeshipBlog',
-  siteUrl: 'https://markusheilig.netlify.de', // Domain of your site. No trailing slash!
+  siteUrl: 'https://markusheilig.netlify.com', // Domain of your site. No trailing slash!
   siteLanguage: 'en', // Language Tag on <html> element
   siteHeadline: 'Writing and publishing content', // Headline for schema.org JSONLD
   // siteBanner: '/social/banner.jpg', // Your image for og:image tag. You can find it in the /static folder
