@@ -1,0 +1,45 @@
+---
+date: "2019-06-27"
+title: "Docker Basic Commands"
+categories:  ["Tools", "Docker"]
+---
+
+
+These days I setup a CI-Server using Jenkins and Docker.
+I decided to go with Docker since I didn't want to 'pollute' my local machine further 😅.
+Another reason for using Docker is that the setup is easier to understand once (once it is done) because everything is managed in its own environment.
+
+I have to admit that I still don't know much about Docker and therefore I always spend a lot of time for googling the commands I need.
+For that reason, let's use today's post to summarize the commands I use the most:
+
+1. `docker build -t my-image .`
+  Create an image from a Dockerfile.
+
+1. `docker images`
+  Show all images.
+
+1. `docker run --name my-container my-image`
+  Derive container from an image, name and run it.
+
+1. `docker run --name my-container -p 8080:8080 my-image`
+  Run a container and publish port 8080 to the host machine.
+
+1. `docker ps`
+  List all running containers.
+
+1. `docker ps -a`
+  List all containers.
+
+1. `docker stop my-container`
+  Stop a container 🙃
+
+1. `docker exec -i -t my-container /bin/sh`
+  Connect to container 'my-container' and run a shell.
+
+BTW: This post could have been online for at least half an hour, but unfortunately I broke my Node.js version in an update today, so the blog can't be built anymore.
+Maybe I should also run my blog with docker containers? 🤔
+
+See you tomorrow!
+
+
+
