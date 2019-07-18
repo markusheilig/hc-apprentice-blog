@@ -1,0 +1,109 @@
+---
+date: "2019-07-18"
+title: "Refactoring Techniques"
+categories:  ["Refactoring"]
+---
+
+Currently, I'm reading the 3rd chapter of Martin Fowler's book *Refactoring: Improving the Design of Existing Code*.
+So far, I like the book and the examples Martin Fowler provides. However, sometimes, it is hard to follow because he uses a lot of cross-references for different refactoring techniques.
+This results in a lot of jumps and therefore interrupts the reading flow.
+At least, I'm happy that I have the Amazon-Kindle version instead of the printed one!
+
+In this post, I'll describe some refactoring techniques (**RT**), which I don't consider evident by their name (and thus I looked up again and again).
+Writing things down is a good way for me to remember them, but since there are **a lot** of refactoring techniques, I will update this blog post from time to time.
+So let's start:
+
+**RT 189 - Hide Delegate** ...
+
+... to achieve encapsulation by avoiding accessing nested objects.
+
+For example, instead of 
+```JavaScript
+const manager = employee.department.manager;
+```
+
+better write
+```JavaScript
+const manager = employee.manager;
+class Employee {
+    get manager() { return this.department.manager; }
+}
+```
+
+---
+
+**RT 231 - Replace Loop with Pipeline** ...
+
+... because declarative functions may be easier to follow than imperative code.
+
+Instead of 
+```JavaScript
+const names = [];
+for (const person of persons) {
+    if (person.job === 'programmer')
+        names.push(person.name);    
+}
+```
+
+write
+```JavaScript
+const names = persons
+                .filter(p => p.job === 'programmer')
+                .map(p => p.name);
+```
+
+---
+
+**RT 362 - Replace Type Code with Subclasses** ...
+
+... to split up a large class with too much responsibility into several subclasses.
+
+Before
+```JavaScript
+const createNewEmployee = (name, employeeType) => {
+    return new Employee(name, type);
+}
+```
+
+After
+```JavaScript
+const createNewEmployee = (name, employeeType) => {
+    switch(employeeType) {
+        case 'engineer': return new Engineer(name);
+        case 'salesman': return new Salesman(name);
+        case 'manager': return new Manager(name);
+    }    
+}
+```
+
+---
+
+**RT 380 - Collapse Hierarchy** ...
+
+... when a subclass and its parent class are not different enough to be worth keeping separate.
+
+---
+
+**RT 399 - Replace Superclass with Delegate** ...
+
+... to get rid of inheritance by using a 'has-a' relation instead of a 'is-a' relation.
+
+This can be done by replacing
+```JavaScript
+class List {}
+class Stack extends List {}
+```
+
+with
+```JavaScript
+class List {}
+class Stack {
+    constructor() {
+        this.storage = new List()
+    }
+}
+```
+
+---
+
+As described above, there are a lot of different refactoring techniques, so this post will grow over time :-)
