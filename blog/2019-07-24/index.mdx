@@ -1,0 +1,22 @@
+---
+date: "2019-07-24"
+title: "My last station"
+categories:  ["BusinessPhase"]
+---
+
+
+The last two weeks of my business phase have started, and since Monday I am again in a new (and also my last) team.
+This team is responsible for [HolidayCheck Reisen](https://www.holidaycheck.de/od/holidaycheck-reisen/ea63bac1-0777-3216-9af1-ad020279db34), and I was also involved in the development.
+
+In context of this team, I will develop a Scala service which provides information about transfer offers (i.e., how can you get from the airport to the hotel).
+For data management, it was discussed that I will use a MongoDB (cool!). For the REST interface, I would like to try out Akka-HTTP because until now I have only used the Play-Framework for Scala-Web-Services and so I can see something new :-)
+Unfortunately, the first two days were quite sobering, because I didn't progress as I wanted to:
+I used the `scalaxb-sbt` plugin to generate classes from an `XSD` file (XML Schema Definition).
+However, there were some troubles with code generation. First I had trouble to resolve dependencies correctly, then I destroyed my entire `sbt` project and last but not least, two files with almost the same name were generated (package.class and Package.class). Since the filesystem on Mac is case-insensitive, this causes troubles when executing the application.
+And when everything worked out halfway, I finally noticed that the XSD and thus the generated classes and parser didn't fit the XML files. 🤦
+
+Learning of the day(s): next time I should slow down when starting a task, analyze the data+structure first, and *then* start coding. ¯\_(ツ)_/¯
+
+At least it worked out better today.
+
+Have a nice evening!
