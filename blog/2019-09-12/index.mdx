@@ -1,0 +1,76 @@
+---
+date: "2019-09-12"
+title: "Hexagonal Architecture"
+categories:  ["Software Design"]
+---
+
+I've just read an internal design document that deals with "Hexagonal Architecture" among other things.
+I've heard the term before, but I've never gone deeper, so I summarize some points about it in this post.
+
+##### Hexagonal Architecture
+- was proposed by Alistair Cockburn in 2005
+- is a model/pattern for designing software elements 
+- was the working name for the "Ports and Adapters Pattern"
+- aims to put inputs and outputs (e.g. request/response, file, database, console) at the edges of your design
+- the goal is to isolate application logic from outside concerns.
+- makes it easier to change your input/output handlers since your "core" is not affected by any of it
+
+###### Why (or do we even want?) Hexagonal Architecture?
+
+Alistair Cockburn describes the intent in his article __*__ as follows:
+
+````
+Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual run-time devices and databases.
+````
+
+Sounds, I think, very reasonable. We don't want our app (domain and business Logic) to have direct dependencies to other systems, like databases, console, web services, or similar.
+The more complicated part is, how can this be achieved?
+Maybe you can remember my blog post about [isolated tests](https://markusheilig.netlify.com/day-21-isolated-tests-in-practice-part-1)?
+In that post, I described the problem that my Scala Tic-Tac-Toe application dependent heavily on console input.
+The dependencies were so intense that the game logic was coupled with reading input from the console.
+In order to make the application more testable and more comfortable to maintain, we, therefore, need some decoupling.
+
+__*__ (a cached version of his article can be found [here](http://web.archive.org/web/20170916120520/http://alistair.cockburn.us/Hexagonal+architecture) - the [original url](http://alistair.cockburn.us/crystal/articles/hpaaa/hexagonalportsandadaptersarchitecture.htm) doesn't seem to work anymore)
+
+##### How can we achieve decoupling using 'Hexagonal Architecture'?
+
+Hexagonal Architecture describes a system using three components, i.e., "Application", "user-side API" and "data-side API".
+The "Application" contains the domain and business logic - this is what really brings business value since it solves a problem.
+Within this layer, we will not (directly) talk to the real world (i.e., reading from the console, writing to the database, listening on messages from a message broker, etc.).
+For these concerns, we have the "user-side API" which defines inputs for our application, as well as the "data-side API" which
+is used to access and store data.
+The "Application" layer defines "Ports" which are gateways which define how the application can be accessed or used.
+The "user-side API" and "data-side API" provide corresponding "Adapters".
+In the end, "Ports" are interfaces and "Adapters" are concrete implementations.
+This way, our "core" does not know about concrete, technical parts like specific databases, or web-services.
+It is enough to know that we have a defined gateway (port) and there is an adapter for it.
+
+<img src="http://web.archive.org/web/20170916120520im_/http://alistair.cockburn.us/get/2302">
+
+<hr>
+
+My masterpiece Elixir project currently is split into three applications.
+(Elixir projects structured like this are called "Umbrella Projects.")
+The app structure (and also the corresponding directory structure) is like this:
+````
+miles_check/    
+    ├── apps
+    │   ├── miles_check_cli
+    │   ├── miles_check_core
+    │   └── miles_check_web    
+    ├── README.md
+    ├── ...
+````
+
+The `miles_check_core` defines the domain / business logic.
+It contains code which solves the current problem of manual checking miles and thus provides value for the business (automation saves time and is less error-prone).
+The `miles_check_core` is also the app with which I started when I created the project.
+The `miles_check_cli` is a simple command-line application which uses the `miles_check_core`-app.
+It does not know much about the `miles_check_core`; it only calls a few public functions to trigger a miles check.
+However, since colleagues from the Content department should have an easy way to do the miles check, I'm building a small web application.
+Therefore, I created a third app called `miles_check_web`.
+It is only a simple web page which right now sends an HTTP request to the backend which then triggers the miles check.
+
+
+So I will continue to work on it now :-) 
+
