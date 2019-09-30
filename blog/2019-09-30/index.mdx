@@ -1,53 +1,22 @@
 ---
-date: "2019-09-23"
-title: "Masterpiece Tech Stack"
+date: "2019-09-30"
+title: "Happy Faces"
 categories:  ["Masterpiece"]
 ---
 
-The implementation part of my Masterpiece in its final stages or almost done.
-The service is also already deployed on our internal Google-Cloud dev cluster for test purposes.
-On friday, I had an annoying error with my Docker deployment: when I deployed a new Docker image to the Docker repository, my service didn't update or restart.
-I'm still not sure why this happened, however I got it finally work with the help of Marcus.
-Before, I used the same image name for the deployment and it worked quite fine (at least for some time).
-Marcus told me that using the same image name may lead to problems since it can happen that the Docker registry does not replace the old with the new one.
-For this reason, he suggested to use a different image name.
-Therefore, I now postfix my image name with the current git commit hash (`git rev-parse --short HEAD`).
+Recently I wrote a blog post in which I said that I will try to blog more in the last time of my apprenticeship.
+And I didn't make it, unfortunately. In the last 2 weeks, there have been some spontaneous, important meetings and sessions, which are essential for my future time with my new team (TourOperator🎉).
+I still have an unpublished blog post on my laptop, where I explain the tech stack of my Masterpiece project in more detail.
+I will finish and post this one in the near future.
 
-Back to architecture:
-The backend is written in Elixir, splitted into three applications.
-The first app (called `miles_check_core`) is the "heart" of the overall project and contains the business logic for the miles check.
-The second app (called `miles_check_cli`) is a simple command line tool which uses the core application to do miles check on the command line - only for devs;-).
-The third app (called `miles_check_web`) is Phoenix-Server which serves a simple web page where the user can upload a csv file and define some custom time ranges for when review authors will earn bonus miles.
+Btw., how did my Masterpiece go?
+On Friday - after some back and forth (with rights problems & MySql) - I finally deployed my service on the production environment, so just in time :-)
+This afternoon, I had a meeting with my stakeholders Sandra & Sybille from the content department, where I presented them the final state.
+Together we checked the application's behavior for real data on the productive system.
+I have to admit that for me, these are moments when the pulse starts to beat a little faster.
+Due to TDD, I have a high test coverage in my project, which also gives me great confidence in the correct behavior of the software.
+But nevertheless, presenting and double-checking your software with production data is still an exciting moment, at least for me.
+But everything went great - we found not a single case where the tool produced a wrong output - very satisfying ;-D
 
-The core application uses Ecto to access the MySql database.
-Ecto is a very cute library with which you can define schemas and queries which look like SQL, however they are Elixir functions and macros which generate the final queries.
-This is especially helpful since this way the compiler is able to detect errors at compile time!
-
-This is an example demonstrating how a query looks like:
-```
-def get do
-    query =
-      from w in Weather,
-           where: w.prcp > 0 or is_nil(w.prcp),
-           select: w
-
-    Repo.all(query)
-  end
-```
-
-
-
-I have created three Elixir applications
-
-Database mysql --> access: Ecto
-business logic: 
-Phoenix as Webserver -> Serving page and handle form data request
-
-
-
-
-TDD that stuff
-
-
-
-
+So my time as an apprentice ends with a tear in one eye (time passed too fast!) and a smile in the other (cool work in a new, great team!).
+But the best thing about this day, my official last day as an apprentice, was to see the happy faces of Sandra & Sybille, who are very excited about their new tool - the MilesChecker :-)
